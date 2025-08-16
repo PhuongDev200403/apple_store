@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -59,5 +60,14 @@ public class JwtUtil {
                 .getBody()
                 .getExpiration()
                 .before(new Date());
+    }
+
+    public List extractRoles(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("roles", List.class);
     }
 }
