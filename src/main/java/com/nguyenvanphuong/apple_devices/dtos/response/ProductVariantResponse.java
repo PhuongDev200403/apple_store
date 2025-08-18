@@ -1,10 +1,7 @@
 package com.nguyenvanphuong.apple_devices.dtos.response;
 
-import com.nguyenvanphuong.apple_devices.entity.Product;
-import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @Builder
@@ -19,5 +16,10 @@ public class ProductVariantResponse {
     Long quantity;
     Long memory;
     String color;
+    float screenSize;
+    String resolution;
+    String cpu;
+    String chipset;
+    String screenType;
     //Long product_id;
 }

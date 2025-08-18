@@ -1,6 +1,7 @@
 package com.nguyenvanphuong.apple_devices.entity;
 
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -33,6 +34,21 @@ public class ProductVariant {
 
     @Column(name = "color")
     String color;
+
+    @Column(name = "screen_size")
+    float screenSize;
+
+    @Column(name = "resolution")
+    String resolution;
+
+    @Column(name = "cpu")
+    String cpu;
+
+    @Column(name = "screen_type")
+    String screenType;
+
+    @Column(name = "chipset")
+    String chipset;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)

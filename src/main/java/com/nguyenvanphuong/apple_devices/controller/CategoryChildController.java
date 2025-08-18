@@ -1,11 +1,13 @@
 package com.nguyenvanphuong.apple_devices.controller;
 
 import com.nguyenvanphuong.apple_devices.dtos.request.CategoryChildRequest;
+import com.nguyenvanphuong.apple_devices.dtos.response.ApiResponse;
 import com.nguyenvanphuong.apple_devices.dtos.response.CategoryChildResponse;
 import com.nguyenvanphuong.apple_devices.service.CategoryChildService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,37 +20,53 @@ public class CategoryChildController {
 
     //Phương thức Thêm mới một danh mục con
     @PostMapping()
-    public ResponseEntity<CategoryChildResponse> create(@RequestBody CategoryChildRequest request){
-        return new ResponseEntity<>(categoryChildService.createNewCateChild(request), HttpStatus.CREATED);
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ApiResponse<CategoryChildResponse> create(@RequestBody CategoryChildRequest request){
+        return ApiResponse.<CategoryChildResponse>builder()
+                .result(categoryChildService.createNewCateChild(request))
+                .build();
     }
 
     //Phương thứ lấy tất cả danh sách
     @GetMapping()
-    public ResponseEntity<List<CategoryChildResponse>> getAll(){
-        return new ResponseEntity<>(categoryChildService.getAllCateChild(), HttpStatus.OK);
+    public ApiResponse<List<CategoryChildResponse>> getAll(){
+        return ApiResponse.<List<CategoryChildResponse>>builder()
+                .result(categoryChildService.getAllCateChild())
+                .build();
     }
 
     //Phương thức lấy danh mục con theo id
     @GetMapping("/{id}")
-    public ResponseEntity<CategoryChildResponse> getCateChildById(@PathVariable Long id){
-        return new ResponseEntity<>(categoryChildService.getCateChildById(id), HttpStatus.OK);
+    public ApiResponse<CategoryChildResponse> getCateChildById(@PathVariable Long id){
+        return ApiResponse.<CategoryChildResponse>builder()
+                .result(categoryChildService.getCateChildById(id))
+                .build();
     }
 
     //Phương thức cập nhật danh mục
     @PutMapping("/{id}")
-    public ResponseEntity<CategoryChildResponse> updateCateChild(@RequestBody CategoryChildRequest request, @PathVariable Long id){
-        return new ResponseEntity<>(categoryChildService.updateCateChild(request, id), HttpStatus.OK);
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ApiResponse<CategoryChildResponse> updateCateChild(@RequestBody CategoryChildRequest request, @PathVariable Long id){
+        return ApiResponse.<CategoryChildResponse>builder()
+                .result(categoryChildService.updateCateChild(request, id))
+                .build();
     }
 
     //Phương thức xóa danh mục con
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteCateChildById(@PathVariable Long id){
-        return new ResponseEntity<>(categoryChildService.deleteCateChild(id), HttpStatus.OK);
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ApiResponse<String> deleteCateChildById(@PathVariable Long id){
+        categoryChildService.deleteCateChild(id);
+        return ApiResponse.<String>builder()
+                .result("Xóa thành công")
+                .build();
     }
 
     //Phương thức lấy danh mục con theo danh mục cha
     @GetMapping("/category/{id}")
-    public ResponseEntity<List<CategoryChildResponse>> getByCategory(@PathVariable Long id){
-        return new ResponseEntity<>(categoryChildService.getCateChileByCategoryId(id), HttpStatus.OK);
+    public ApiResponse<List<CategoryChildResponse>> getByCategory(@PathVariable Long id){
+        return ApiResponse.<List<CategoryChildResponse>>builder()
+                .result(categoryChildService.getCateChileByCategoryId(id))
+                .build();
     }
 }

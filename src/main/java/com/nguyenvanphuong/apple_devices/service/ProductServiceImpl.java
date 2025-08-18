@@ -6,6 +6,8 @@ import com.nguyenvanphuong.apple_devices.dtos.response.ProductResponse;
 import com.nguyenvanphuong.apple_devices.entity.CategoryChild;
 import com.nguyenvanphuong.apple_devices.entity.Product;
 import com.nguyenvanphuong.apple_devices.entity.ProductVariant;
+import com.nguyenvanphuong.apple_devices.exception.AppException;
+import com.nguyenvanphuong.apple_devices.exception.ErrorCode;
 import com.nguyenvanphuong.apple_devices.mapper.ProductMapper;
 import com.nguyenvanphuong.apple_devices.mapper.ProductVariantMapper;
 import com.nguyenvanphuong.apple_devices.repository.CategoryChildRepository;
@@ -30,52 +32,36 @@ public class ProductServiceImpl implements ProductService{
         Product product = productMapper.toEntity(request);
 
         CategoryChild categoryChild = categoryChildRepository.findById(request.getCategoryChildId())
-                .orElseThrow(() -> new RuntimeException("Danh mục con không tồn tại"));
+                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_CHILD_NOT_FOUND));
         product.setCategoryChild(categoryChild);
-
-//        List<ProductVariant> variantEntities = new ArrayList<>();
-//        for (ProductVariantRequest variantReq : variants) {
-//            ProductVariant variant = productVariantMapper.toEntity(variantReq);
-//
-//            // Lưu ảnh vào folder backend
-//            if (variantReq.getImageUrl() != null && !variantReq.getImageUrl().isEmpty()) {
-//                String filePath = saveImage(variantReq.getImageUrl());
-//                variant.setImageUrl(filePath);
-//            }
-//
-//            variant.setProduct(product);
-//            variantEntities.add(variant);
-//        }
-//        product.setProductVariants(variantEntities);
 
         productRepository.save(product);
         return productMapper.toResponse(product);
     }
 
-//    private String saveImage(MultipartFile file) {
-//        try {
-//            String folderPath = "uploads/images/";
-//            File folder = new File(folderPath);
-//            if (!folder.exists()) {
-//                folder.mkdirs();
-//            }
-//            String filePath = folderPath + System.currentTimeMillis() + "_" + file.getOriginalFilename();
-//            file.transferTo(new File(filePath));
-//            return filePath;
-//        } catch (IOException e) {
-//            throw new RuntimeException("Lỗi khi lưu ảnh", e);
-//        }
-//    }
 
     @Override
     public List<ProductResponse> getAll() {
-        return productRepository.findAll().stream().map(productMapper::toResponse).toList();
+        return productRepository.findAll().stream()
+                .map(productMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    public ProductResponse updateProduct(ProductRequest request) {
+        return null;
     }
 
     @Override
     public ProductResponse getProductById(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+        return productMapper.toResponse(product);
+    }
 
-        return null;
+    @Override
+    public void deleteProduct(Long id) {
+        productRepository.deleteById(id);
     }
 
     @Override

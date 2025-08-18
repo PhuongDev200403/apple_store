@@ -13,11 +13,17 @@ public interface ProductService {
     //Phương thức lấy tất cả sản phẩm theo id
     List<ProductResponse> getAll();
 
+    //Phương thức cập nhật sản phẩm
+    ProductResponse updateProduct(ProductRequest request);
+
     //Phương thức lấy sản phẩm theo id
     ProductResponse getProductById(Long id);
 
     //Phương thức xóa sản phẩm theo id
+    void deleteProduct(Long id);
 
     //Phương thức kiểm tra xem danh mục tồn tại chưa
     boolean existed(String name);
+
+    //Phương thức lấy danh sách sản phẩm theo danh mục
 }

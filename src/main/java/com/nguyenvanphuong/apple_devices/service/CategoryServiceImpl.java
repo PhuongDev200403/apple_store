@@ -3,6 +3,8 @@ package com.nguyenvanphuong.apple_devices.service;
 import com.nguyenvanphuong.apple_devices.dtos.request.CategoryRequest;
 import com.nguyenvanphuong.apple_devices.dtos.response.CategoryResponse;
 import com.nguyenvanphuong.apple_devices.entity.Category;
+import com.nguyenvanphuong.apple_devices.exception.AppException;
+import com.nguyenvanphuong.apple_devices.exception.ErrorCode;
 import com.nguyenvanphuong.apple_devices.mapper.CategoryMapper;
 import com.nguyenvanphuong.apple_devices.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,16 +24,17 @@ public class CategoryServiceImpl implements CategoryService{
 
     @Override
     public CategoryResponse creatNewCategory(CategoryRequest request) {
-        Optional<Category> existingCategory = categoryRepository.findByName(request.getName());
-
-        if (existingCategory.isPresent()) {
-            throw new RuntimeException("Danh mục đã tồn tại");
+        // Kiểm tra tồn tại
+        if (categoryRepository.findByName(request.getName()).isPresent()) {
+            throw new AppException(ErrorCode.CATEGORY_EXISTED);
         }
 
-        // Tạo category mới nếu chưa tồn tại
-        Category newCate = categoryMapper.toCategory(request);
-        categoryRepository.save(newCate);
-        return categoryMapper.toCategoryResponse(newCate);
+        // Tạo mới và lưu
+        Category newCategory = categoryMapper.toCategory(request);
+        categoryRepository.save(newCategory);
+
+        // Trả về response
+        return categoryMapper.toCategoryResponse(newCategory);
     }
 
     @Override
@@ -43,47 +46,42 @@ public class CategoryServiceImpl implements CategoryService{
 
     @Override
     public CategoryResponse getCategoryById(Long id) {
-        Optional<Category> category = categoryRepository.findById(id);
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
 
-        if(!category.isPresent()){
-            throw new RuntimeException("Category không tồn tại");
-        }
-
-        return categoryMapper.toCategoryResponse(category.get());
+        return categoryMapper.toCategoryResponse(category);
     }
 
     @Override
     public CategoryResponse updateCategory(CategoryRequest request, Long id) {
+        // Tìm category theo id
         Category existingCategory = categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category không tồn tại"));
+                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
 
         // Kiểm tra trùng tên (nếu tên mới khác tên cũ)
-        if (!existingCategory.getName().equals(request.getName())) {
-            Optional<Category> duplicateCategory = categoryRepository.findByName(request.getName());
-            if (duplicateCategory.isPresent()) {
-                throw new RuntimeException("Tên danh mục đã tồn tại");
-            }
+        if (!existingCategory.getName().equalsIgnoreCase(request.getName())) {
+            categoryRepository.findByName(request.getName())
+                    .ifPresent(duplicate -> {
+                        throw new AppException(ErrorCode.CATEGORY_EXISTED);
+                    });
         }
 
         // Cập nhật thông tin
         existingCategory.setName(request.getName());
-        existingCategory.setDescription(request.getDescription()); // nếu có field này
-        // Cập nhật các field khác nếu có...
+        existingCategory.setDescription(request.getDescription());
 
         // Lưu vào database
         Category updatedCategory = categoryRepository.save(existingCategory);
 
-        // Convert và return
         return categoryMapper.toCategoryResponse(updatedCategory);
     }
 
     @Override
-    public String deleteCategory(Long id) {
+    public void deleteCategory(Long id) {
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category không tồn tại"));
+                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
 
         categoryRepository.delete(category);
-        return "Xóa thành công";
     }
 
     @Override

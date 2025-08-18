@@ -17,7 +17,7 @@ public interface CategoryChildService {
     List<CategoryChildResponse> getAllCateChild();
 
     //Xóa một danh mục con
-    String deleteCateChild(Long id);
+    void deleteCateChild(Long id);
 
     //Lấy danh mục theo id của danh mục
     CategoryChildResponse getCateChildById(Long id);

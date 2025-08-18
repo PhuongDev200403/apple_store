@@ -4,6 +4,8 @@ import com.nguyenvanphuong.apple_devices.dtos.request.ProductVariantRequest;
 import com.nguyenvanphuong.apple_devices.dtos.response.ProductVariantResponse;
 import com.nguyenvanphuong.apple_devices.entity.Product;
 import com.nguyenvanphuong.apple_devices.entity.ProductVariant;
+import com.nguyenvanphuong.apple_devices.exception.AppException;
+import com.nguyenvanphuong.apple_devices.exception.ErrorCode;
 import com.nguyenvanphuong.apple_devices.mapper.ProductVariantMapper;
 import com.nguyenvanphuong.apple_devices.repository.ProductRepository;
 import com.nguyenvanphuong.apple_devices.repository.ProductVariantRepository;
@@ -32,7 +34,7 @@ public class ProductVariantServiceImpl implements ProductVariantService{
     public ProductVariantResponse createVariant(ProductVariantRequest request) throws IOException {
         // Tìm sản phẩm cha
         Product product = productRepository.findById(request.getProductId())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm"));
+                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
 
         // Map từ request -> entity
         ProductVariant variant = productVariantMapper.toEntity(request);
@@ -52,4 +54,5 @@ public class ProductVariantServiceImpl implements ProductVariantService{
         ProductVariant saved = productVariantRepository.save(variant);
         return productVariantMapper.toResponse(saved);
     }
+
 }

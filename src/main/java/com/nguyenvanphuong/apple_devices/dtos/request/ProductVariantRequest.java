@@ -18,5 +18,10 @@ public class ProductVariantRequest {
     Long quantity;
     String color;
     Long memory;
+    float screenSize;
+    String resolution;
+    String cpu;
+    String chipset;
+    String screenType;
     Long productId;
 }

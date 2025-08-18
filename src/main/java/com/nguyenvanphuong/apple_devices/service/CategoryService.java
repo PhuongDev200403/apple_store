@@ -15,7 +15,7 @@ public interface CategoryService {
     //Cập nhât danh mục
     CategoryResponse updateCategory(CategoryRequest request, Long id);
     //Xóa Danh mục
-    String deleteCategory(Long id);
+    void deleteCategory(Long id);
     //Kiểm tra xem đã tồn tại danh mục hay chưa
 
     Boolean existed(String name);
