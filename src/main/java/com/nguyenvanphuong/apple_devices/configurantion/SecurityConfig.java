@@ -3,6 +3,7 @@ package com.nguyenvanphuong.apple_devices.configurantion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -26,8 +27,8 @@ public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final UserDetailsService userDetailsService;
-    //private final PasswordEncoder passwordEncoder;
 
+    private final String[] PUBLIC_ENDPOINTS = {"/auth/**", "/series/**", "/categories/**", "/news/**", "/products/**", "/variants/**", "/users/**"};
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -35,7 +36,7 @@ public class SecurityConfig {
                 .cors(cors -> {}) // Cấu hình CORS nếu cần
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll() // tạm thời cho phép tất cả
+                        .requestMatchers(PUBLIC_ENDPOINTS).permitAll() // tạm thời cho phép tất cả
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())

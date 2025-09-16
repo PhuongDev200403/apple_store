@@ -37,6 +37,7 @@ public class User implements UserDetails {
     @Column(name = "email")
     private String email;
 
+    //@Enumerated(EnumType.STRING)
     @Column(name = "role")
     private Role role;
 

@@ -11,4 +11,6 @@ public interface NewsRepository extends JpaRepository<News, Long> {
     boolean existsByTitle(String title);
 
     List<News> findByIsFeaturedTrue();
+
+    List<News> findByIsActiveTrue();
 }

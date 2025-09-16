@@ -29,7 +29,7 @@ public class JwtAuthFilter extends OncePerRequestFilter{
                                     FilterChain filterChain) throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
-        final String username;
+        final String email;
 
         // Nếu không có Bearer Token thì bỏ qua
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -38,11 +38,11 @@ public class JwtAuthFilter extends OncePerRequestFilter{
         }
 
         jwt = authHeader.substring(7); // cắt bỏ "Bearer "
-        username = jwtUtil.extractUsername(jwt);
+        email = jwtUtil.extractEmail(jwt);
 
         // Nếu chưa có Authentication trong SecurityContext
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = this.userDetailsService.loadUserByUsername(email);
 
             if (jwtUtil.validateToken(jwt, userDetails)) {
                 // Lấy roles từ token

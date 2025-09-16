@@ -1,7 +1,16 @@
 package com.nguyenvanphuong.apple_devices.dtos.response;
 
+import com.nguyenvanphuong.apple_devices.entity.ProductVariantStatus;
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -10,16 +19,16 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductVariantResponse {
     Long id;
-    float price;
-    boolean status = true;
+    BigDecimal price;
+    String status;
     String imageUrl;
     Long quantity;
-    Long memory;
+    String memory;
+    String sku;
     String color;
-    float screenSize;
-    String resolution;
-    String cpu;
-    String chipset;
-    String screenType;
-    //Long product_id;
+    String specifications;
+    String slug;
+    LocalDateTime createdAt;
+    LocalDateTime updatedAt;
+    Long productId;
 }

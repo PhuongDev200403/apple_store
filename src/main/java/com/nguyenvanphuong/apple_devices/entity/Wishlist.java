@@ -3,12 +3,15 @@ package com.nguyenvanphuong.apple_devices.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 //Một người chỉ có thể add một lần cho một sản phẩm
-@Table(name = "wishlist", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "product_id"}))
+@Table(name = "wishlist")
 @Data
 @Builder
 @AllArgsConstructor
@@ -19,14 +22,17 @@ public class Wishlist {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
     User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
-    Product product;
-
-    @Column(name = "created_at")
+    @CreationTimestamp
     LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    LocalDateTime updatedAt;
+
+    // Quan hệ với WishlistItem
+    @OneToMany(mappedBy = "wishlist", cascade = CascadeType.ALL)
+    List<WishlistItem> items;
 }

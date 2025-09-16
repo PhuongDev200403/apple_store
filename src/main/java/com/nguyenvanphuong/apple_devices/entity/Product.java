@@ -29,11 +29,12 @@ public class Product {
     @Column(name = "update_at")
     LocalDateTime updateAt;
 
-    @Column(name = "status")
-    Boolean status = true;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 20)
+    ProductStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_child_id", nullable = false)
+    @JoinColumn(name = "category_child_id")
     CategoryChild categoryChild;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)

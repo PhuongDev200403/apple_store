@@ -1,6 +1,7 @@
 package com.nguyenvanphuong.apple_devices.dtos.request;
 
 import com.nguyenvanphuong.apple_devices.dtos.response.ProductVariantResponse;
+import com.nguyenvanphuong.apple_devices.entity.ProductStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,6 +16,6 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductRequest {
     String name;
-    Boolean status = true;
+//    ProductStatus status;
     Long categoryChildId;
 }

@@ -16,9 +16,10 @@ public class InitilConfig implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (userRepository.findByUsername("admin").isEmpty()) {
+        if (userRepository.findByEmail("admin@gmail.com").isEmpty()) {
             User admin = User.builder()
                     .username("admin")
+                    .email("admin@gmail.com")
                     .password(passwordEncoder.encode("admin"))
                     .role(Role.ADMIN)
                     .build();

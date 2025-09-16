@@ -16,4 +16,3 @@ public class CategoryResponse {
     String description;
     List<CategoryChildResponse> series;
 }
-//trả về danh sách các danh mục con

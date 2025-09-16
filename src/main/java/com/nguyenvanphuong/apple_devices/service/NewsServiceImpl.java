@@ -35,7 +35,6 @@ public class NewsServiceImpl implements NewsService{
             throw new AppException(ErrorCode.NEWS_EXISTED);
         }
 
-        // Mapping từ request
         News news = newsMapper.toNews(request);
         news.setPublishedAt(LocalDateTime.now());
 
@@ -52,7 +51,6 @@ public class NewsServiceImpl implements NewsService{
                 Path filePath = Paths.get(UPLOAD_DIR, fileName);
                 Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-                // Lưu đường dẫn ảnh (có thể chỉ lưu tên file hoặc full URL tùy cách bạn muốn FE lấy ảnh)
                 news.setImageUrl(fileName);
 
             } catch (IOException e) {
@@ -70,6 +68,8 @@ public class NewsServiceImpl implements NewsService{
         return null;
     }
 
+
+    //chức năng lấy tất cả chỉ có admin mới lấy được bao gồm cả tin tức đã được xóa
     @Override
     public List<NewsResponse> getAllNews() {
         return newsRepository.findAll().stream()
@@ -88,9 +88,23 @@ public class NewsServiceImpl implements NewsService{
 
     @Override
     public void deleteNews(Long id) {
-        newsRepository.deleteById(id);
+        News news = newsRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.NEWS_NOT_FOUND));
+        news.setIsActive(!news.getIsActive());
+        newsRepository.save(news);
     }
 
+    //Lấy danh sách tin tức đang active
+    //Endpoint public
+    @Override
+    public List<NewsResponse> getNewsByIsActiveTrue() {
+        return newsRepository.findByIsActiveTrue().stream()
+                .map(newsMapper::toNewsResponse)
+                .toList();
+    }
+
+    //Lấy danh sách nổi bật
+    //Endpoint public
     @Override
     public List<NewsResponse> getNewsByIsFeaturedTrue() {
         List<News> newsList = newsRepository.findByIsFeaturedTrue();

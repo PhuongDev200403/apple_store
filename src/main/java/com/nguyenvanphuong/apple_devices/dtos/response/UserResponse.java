@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 public class UserResponse {
     Long id;
     String username;
-    String password;
     String phone;
     String email;
     Role role;

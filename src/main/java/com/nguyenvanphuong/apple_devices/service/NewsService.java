@@ -22,6 +22,9 @@ public interface NewsService {
     //Phương thức xóa tin tức
     void deleteNews(Long id);
 
+    //phương thức lấy tin tức đang còn active
+    List<NewsResponse> getNewsByIsActiveTrue();
+
     //Phương thức lấy tin tức nổi bật
     List<NewsResponse> getNewsByIsFeaturedTrue();
 }

@@ -3,8 +3,7 @@ package com.nguyenvanphuong.apple_devices.mapper;
 import com.nguyenvanphuong.apple_devices.dtos.request.ProductRequest;
 import com.nguyenvanphuong.apple_devices.dtos.response.ProductResponse;
 import com.nguyenvanphuong.apple_devices.entity.Product;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
@@ -17,4 +16,7 @@ public interface ProductMapper {
 
     @Mapping(source = "categoryChild.id", target = "categoryChildId")
     ProductResponse toResponse(Product product);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateFromRequest(ProductRequest request, @MappingTarget Product product);
 }

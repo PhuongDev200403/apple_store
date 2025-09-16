@@ -18,5 +18,11 @@ public interface ProductVariantService {
     ProductVariantResponse updateVariant(ProductVariantRequest request);
 
     //Lấy danh sách variant theo id của sản phẩm
-    List<ProductVariantResponse> getAllByProductId(Long productId);
+    List<ProductVariantResponse> getVariantsByProductId(Long productId);
+
+    //Lấy sản phẩm theo màu
+    ProductVariantResponse getVariantByProductAndColor(Long productId, String color, String memory);
+
+    //Lấy tất cả sản phẩm ra
+    List<ProductVariantResponse> getAll();
 }

@@ -18,7 +18,7 @@ public class CategoryChildController {
     @Autowired
     CategoryChildService categoryChildService;
 
-    //Phương thức Thêm mới một danh mục con
+    //Phương thức Thêm mới một danh mục con chỉ có admin mới được thao tác
     @PostMapping()
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ApiResponse<CategoryChildResponse> create(@RequestBody CategoryChildRequest request){
@@ -28,6 +28,7 @@ public class CategoryChildController {
     }
 
     //Phương thứ lấy tất cả danh sách
+    //Endpoint public
     @GetMapping()
     public ApiResponse<List<CategoryChildResponse>> getAll(){
         return ApiResponse.<List<CategoryChildResponse>>builder()
@@ -36,6 +37,7 @@ public class CategoryChildController {
     }
 
     //Phương thức lấy danh mục con theo id
+    //Endpoint public
     @GetMapping("/{id}")
     public ApiResponse<CategoryChildResponse> getCateChildById(@PathVariable Long id){
         return ApiResponse.<CategoryChildResponse>builder()
@@ -43,7 +45,7 @@ public class CategoryChildController {
                 .build();
     }
 
-    //Phương thức cập nhật danh mục
+    //Phương thức cập nhật danh mục chỉ có admin
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ApiResponse<CategoryChildResponse> updateCateChild(@RequestBody CategoryChildRequest request, @PathVariable Long id){
@@ -63,6 +65,7 @@ public class CategoryChildController {
     }
 
     //Phương thức lấy danh mục con theo danh mục cha
+    //Endpoint public
     @GetMapping("/category/{id}")
     public ApiResponse<List<CategoryChildResponse>> getByCategory(@PathVariable Long id){
         return ApiResponse.<List<CategoryChildResponse>>builder()

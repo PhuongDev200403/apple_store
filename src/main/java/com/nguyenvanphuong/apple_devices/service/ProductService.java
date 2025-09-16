@@ -3,6 +3,7 @@ package com.nguyenvanphuong.apple_devices.service;
 import com.nguyenvanphuong.apple_devices.dtos.request.ProductRequest;
 import com.nguyenvanphuong.apple_devices.dtos.request.ProductVariantRequest;
 import com.nguyenvanphuong.apple_devices.dtos.response.ProductResponse;
+import com.nguyenvanphuong.apple_devices.entity.Product;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public interface ProductService {
     List<ProductResponse> getAll();
 
     //Phương thức cập nhật sản phẩm
-    ProductResponse updateProduct(ProductRequest request);
+    ProductResponse updateProduct(ProductRequest request, Long id);
 
     //Phương thức lấy sản phẩm theo id
     ProductResponse getProductById(Long id);
@@ -22,8 +23,8 @@ public interface ProductService {
     //Phương thức xóa sản phẩm theo id
     void deleteProduct(Long id);
 
-    //Phương thức kiểm tra xem danh mục tồn tại chưa
-    boolean existed(String name);
-
     //Phương thức lấy danh sách sản phẩm theo danh mục
+
+    //Phương thức tìm kiếm sản phẩm theo tên
+    List<ProductResponse> searcByName(String keyword);
 }

@@ -1,5 +1,6 @@
 package com.nguyenvanphuong.apple_devices.dtos.response;
 
+import com.nguyenvanphuong.apple_devices.entity.ProductStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -15,8 +16,8 @@ import java.util.List;
 public class ProductResponse {
     Long id;
     String name;
-    Boolean status;
+    ProductStatus status;
     Long categoryChildId;
-    List<ProductVariantResponse> productVariants = new ArrayList<>();
+    //List<ProductVariantResponse> productVariants = new ArrayList<>();
 }
 

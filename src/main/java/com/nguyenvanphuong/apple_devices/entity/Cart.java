@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,13 @@ public class Cart {
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     List<CartItem> items = new ArrayList<>();
+
+    @Column(name = "total_quantity")  // Đổi tên rõ hơn
+    private Long totalQuantity = 0L;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private CartStatus status = CartStatus.ACTIVE;
 
     @Column(name = "create_at")
     LocalDateTime createAt;
