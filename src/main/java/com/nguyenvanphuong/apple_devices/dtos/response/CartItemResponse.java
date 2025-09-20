@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 public class CartItemResponse {
     Long id;
     Long productVariantId;
+    String status;
     String productName;
     String productImage;
     String sku;

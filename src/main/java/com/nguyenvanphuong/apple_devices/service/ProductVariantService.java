@@ -11,9 +11,6 @@ public interface ProductVariantService {
     //Phương thức tạo mới một product variant
     ProductVariantResponse createVariant(ProductVariantRequest request) throws IOException;
 
-    //Xóa một product variant
-    void deleteVariant(Long id);
-
     //Cập nhật thông tin của variant
     ProductVariantResponse updateVariant(ProductVariantRequest request);
 
@@ -25,4 +22,5 @@ public interface ProductVariantService {
 
     //Lấy tất cả sản phẩm ra
     List<ProductVariantResponse> getAll();
+
 }

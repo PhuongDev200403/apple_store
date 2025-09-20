@@ -1,5 +1,7 @@
 package com.nguyenvanphuong.apple_devices.service;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.nguyenvanphuong.apple_devices.dtos.request.ProductVariantRequest;
 import com.nguyenvanphuong.apple_devices.dtos.response.ProductVariantResponse;
 import com.nguyenvanphuong.apple_devices.entity.Product;
@@ -11,8 +13,10 @@ import com.nguyenvanphuong.apple_devices.mapper.ProductVariantMapper;
 import com.nguyenvanphuong.apple_devices.repository.ProductRepository;
 import com.nguyenvanphuong.apple_devices.repository.ProductVariantRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -21,8 +25,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProductVariantServiceImpl implements ProductVariantService{
@@ -30,12 +36,13 @@ public class ProductVariantServiceImpl implements ProductVariantService{
     private final ProductVariantRepository productVariantRepository;
     private final ProductVariantMapper productVariantMapper;
 
-    private static final String UPLOAD_DIR = "uploads/images/";
+
+    private final Cloudinary cloudinary;
+
 
     @Override
     public ProductVariantResponse createVariant(ProductVariantRequest request) throws IOException {
         // Tìm sản phẩm cha
-
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
 
@@ -44,36 +51,35 @@ public class ProductVariantServiceImpl implements ProductVariantService{
             throw new AppException(ErrorCode.SKU_EXISTED);
         }
 
-        if(request.getQuantity() == null || request.getQuantity() < 0){
+        if (request.getQuantity() == null || request.getQuantity() < 0) {
             throw new AppException(ErrorCode.INVALID_QUANTITY);
         }
 
         ProductVariant variant = productVariantMapper.toEntity(request);
         variant.setProduct(product);
 
-        // Xử lý lưu file ảnh
+        // Xử lý lưu ảnh lên Cloudinary
         MultipartFile file = request.getImageUrl();
         if (file != null && !file.isEmpty()) {
-            Files.createDirectories(Paths.get(UPLOAD_DIR));
-            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-            Path filePath = Paths.get(UPLOAD_DIR, fileName);
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-            variant.setImageUrl(fileName);
+            try {
+                Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
+                        "public_id", UUID.randomUUID().toString(), // Tên file unique
+                        "folder", "apple-devices" // Lưu vào folder trên Cloudinary (optional)
+                ));
+                String imageUrl = (String) uploadResult.get("secure_url"); // Lấy URL
+                variant.setImageUrl(imageUrl); // Lưu URL vào DB
+            } catch (IOException e) {
+                throw new AppException(ErrorCode.UPLOAD_FAILED);
+            }
         }
 
         // Lưu DB
         ProductVariant saved = productVariantRepository.save(variant);
+
+        log.info("Đang ở service chưa return " + request);
         return productVariantMapper.toResponse(saved);
     }
 
-    //Xóa thì chỉ cập nhật status thành false thôi
-    @Override
-    public void deleteVariant(Long id) {
-        ProductVariant productVariant = productVariantRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_VARIANT_NOT_FOUND));
-
-        productVariant.setStatus(ProductVariantStatus.INACTIVE);
-    }
 
     @Override
     public ProductVariantResponse updateVariant(ProductVariantRequest request) {
@@ -98,9 +104,16 @@ public class ProductVariantServiceImpl implements ProductVariantService{
         return productVariantMapper.toResponse(variant);
     }
 
+    // bao gồm cả các variants
     @Override
     public List<ProductVariantResponse> getAll() {
-        return productVariantRepository.findAll().stream().map(productVariantMapper::toResponse).toList();
+        return productVariantRepository.findAll()
+                .stream().map(productVariantMapper::toResponse)
+                .toList();
     }
+
+
+
+
 
 }

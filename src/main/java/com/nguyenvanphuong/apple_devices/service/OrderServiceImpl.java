@@ -11,6 +11,7 @@ import com.nguyenvanphuong.apple_devices.mapper.OrderItemMapper;
 import com.nguyenvanphuong.apple_devices.mapper.OrderMapper;
 import com.nguyenvanphuong.apple_devices.repository.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,21 +24,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService{
-    @Autowired
-    OrderRepository orderRepository;
-    @Autowired
-    OrderMapper orderMapper;
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    ProductVariantRepository productVariantRepository;
-    @Autowired
-    CartRepository cartRepository;
-    @Autowired
-    private CartItemRepository cartItemRepository;
-    @Autowired
-    private CartService cartService;
+
+    private final OrderRepository orderRepository;
+    private final OrderMapper orderMapper;
+    private final UserRepository userRepository;
+    private final ProductVariantRepository productVariantRepository;
+    private final CartRepository cartRepository;
+    //private final CartItemRepository cartItemRepository;
+    private final CartService cartService;
 
     //Phương thức tạo đơn hàng khi người dùng click mua hàng
     @Override
@@ -68,6 +65,11 @@ public class OrderServiceImpl implements OrderService{
             ProductVariant productVariant = productVariantRepository.findById(itemReq.getProductVariantId())
                     .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_VARIANT_NOT_FOUND));
 
+            productVariant.setQuantity(productVariant.getQuantity() - itemReq.getQuantity());
+
+
+            productVariantRepository.save(productVariant);
+
             BigDecimal itemPrice = productVariant.getPrice()
                     .multiply(BigDecimal.valueOf(itemReq.getQuantity()));
 
@@ -75,7 +77,7 @@ public class OrderServiceImpl implements OrderService{
                     .productVariant(productVariant)
                     .quantity(itemReq.getQuantity())
                     .price(productVariant.getPrice())
-                    .order(order) // Set bidirectional relationship
+                    .order(order)
                     .build();
 
             order.getOrderItems().add(orderItem);
@@ -126,6 +128,14 @@ public class OrderServiceImpl implements OrderService{
 
         for (CartItem cartItem : cart.getItems()) {
             ProductVariant productVariant = cartItem.getProductVariant();
+
+            if (productVariant.getQuantity() < cartItem.getQuantity()) {
+                throw new AppException(ErrorCode.PRODUCT_OUT_OF_STOCK);
+            }
+
+            productVariant.setQuantity(productVariant.getQuantity() - cartItem.getQuantity());
+
+            productVariantRepository.save(productVariant);
 
             BigDecimal itemPrice = productVariant.getPrice()
                     .multiply(BigDecimal.valueOf(cartItem.getQuantity()));

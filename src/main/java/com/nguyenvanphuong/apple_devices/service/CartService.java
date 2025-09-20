@@ -3,6 +3,8 @@ package com.nguyenvanphuong.apple_devices.service;
 import com.nguyenvanphuong.apple_devices.dtos.request.AddToCartRequest;
 import com.nguyenvanphuong.apple_devices.dtos.response.CartResponse;
 
+import java.util.List;
+
 public interface CartService {
 
     //Phướng thức thêm sản phẩm vào giỏ hàng
@@ -10,9 +12,11 @@ public interface CartService {
     //Phương thức xem giỏ hàng theo id
     CartResponse getCartByUserId(Long userId);
     //Phương thức xóa sản phẩm trong giỏ hàng
-    //CartResponse deleteCartItem
+    CartResponse deleteCartItem(Long productVariantId);
     //Phương thức xóa hết sản phẩm trong giỏ hàng
     CartResponse clearCart(Long targetUserId);
     //Phương thức lấy cart của bản thân
     CartResponse getMyCart();
+    //phương thức lấy danh sách giỏ hàng
+    List<CartResponse> getAllCart();
 }

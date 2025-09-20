@@ -1,4 +1,4 @@
-package com.nguyenvanphuong.apple_devices.configurantion;
+package com.nguyenvanphuong.apple_devices.configuration;
 
 import com.nguyenvanphuong.apple_devices.entity.Role;
 import com.nguyenvanphuong.apple_devices.entity.User;

@@ -1,30 +1,28 @@
 package com.nguyenvanphuong.apple_devices.service;
 
 import com.nguyenvanphuong.apple_devices.dtos.request.AddToCartRequest;
-import com.nguyenvanphuong.apple_devices.dtos.response.CartItemResponse;
 import com.nguyenvanphuong.apple_devices.dtos.response.CartResponse;
-import com.nguyenvanphuong.apple_devices.dtos.response.UserResponse;
 import com.nguyenvanphuong.apple_devices.entity.*;
 import com.nguyenvanphuong.apple_devices.exception.AppException;
 import com.nguyenvanphuong.apple_devices.exception.ErrorCode;
 import com.nguyenvanphuong.apple_devices.mapper.CartMapper;
-import com.nguyenvanphuong.apple_devices.mapper.UserMapper;
 import com.nguyenvanphuong.apple_devices.repository.CartItemRepository;
 import com.nguyenvanphuong.apple_devices.repository.CartRepository;
 import com.nguyenvanphuong.apple_devices.repository.ProductVariantRepository;
 import com.nguyenvanphuong.apple_devices.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CartServiceImpl implements CartService{
@@ -41,7 +39,7 @@ public class CartServiceImpl implements CartService{
         if(authentication == null || !authentication.isAuthenticated()){
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
-        var email = authentication.getName(); // name chính là email
+        var email = authentication.getName();
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
@@ -91,6 +89,8 @@ public class CartServiceImpl implements CartService{
                 .mapToLong(CartItem::getQuantity)
                 .sum());
 
+        log.info("Tổng số lượng sản phẩm trong giỏ hàng là :" +cart.getTotalQuantity());
+
         cartRepository.save(cart);
 
         return cartMapper.toResponse(cart);
@@ -112,6 +112,40 @@ public class CartServiceImpl implements CartService{
     }
 
     @Override
+    public CartResponse deleteCartItem(Long productVariantId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if(authentication == null || !authentication.isAuthenticated()){
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+        var email = authentication.getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        Cart cart = cartRepository.findByUser(user)
+                .orElseThrow(() -> new AppException(ErrorCode.CART_NOT_FOUND));
+
+        ProductVariant variant = productVariantRepository.findById(productVariantId)
+                .orElseThrow(()-> new AppException(ErrorCode.PRODUCT_VARIANT_NOT_FOUND));
+
+        CartItem cartItem = cart.getItems().stream()
+                .filter(item -> item.getProductVariant().getId().equals(productVariantId))
+                .findFirst()
+                .orElseThrow(() -> new AppException(ErrorCode.CART_ITEM_NOT_FOUND));
+
+        cart.getItems().remove(cartItem);
+
+        cart.setTotalQuantity(cart.getTotalQuantity() - cartItem.getQuantity());
+
+        cartItemRepository.delete(cartItem);
+
+        cartRepository.save(cart);
+
+        return cartMapper.toResponse(cart);
+    }
+
+    @Override
     public CartResponse clearCart(Long targetUserId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -119,7 +153,6 @@ public class CartServiceImpl implements CartService{
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
 
-        // Lấy email (sub) từ token
         String email = authentication.getName();
 
         User currentUser = userRepository.findByEmail(email)
@@ -142,7 +175,6 @@ public class CartServiceImpl implements CartService{
         Cart cart = cartRepository.findByUserAndStatus(targetUser, CartStatus.ACTIVE)
                 .orElseThrow(() -> new AppException(ErrorCode.CART_NOT_FOUND));
 
-        // Xóa item (chú ý nếu cart.getItems() = null thì khởi tạo)
         if (cart.getItems() != null) {
             cart.getItems().clear();
         }
@@ -155,6 +187,35 @@ public class CartServiceImpl implements CartService{
 
     @Override
     public CartResponse getMyCart() {
-        return null;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if(authentication == null || !authentication.isAuthenticated()){
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        Cart cart = cartRepository.findByUser(user)
+                .orElseGet(() -> {
+                    Cart newCart = Cart.builder()
+                            .user(user)
+                            .status(CartStatus.ACTIVE)
+                            .items(new ArrayList<>())
+                            .build();
+                    return cartRepository.save(newCart);
+                });
+
+        return cartMapper.toResponse(cart);
+    }
+
+    @Override
+    public List<CartResponse> getAllCart() {
+        var carts = cartRepository.findAll();
+        return carts.stream()
+                .map(cartMapper::toResponse)
+                .toList();
     }
 }

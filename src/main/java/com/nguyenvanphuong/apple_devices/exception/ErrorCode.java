@@ -36,6 +36,9 @@ public enum ErrorCode {
     ITEM_ALREADY_EXISTS(1023, "Sản phẩm đã được thêm vào danh sách yêu thích r không thêm nữa", HttpStatus.BAD_REQUEST),
     WISHLIST_NOT_FOUND(1024, "Danh sách yêu thích không tồn tại", HttpStatus.NOT_FOUND),
     ITEM_NOT_FOUND(1025, "Không tìm thấy sản phẩm yêu thích cần xóa", HttpStatus.NOT_FOUND),
+    FILE_UPLOAD_FAILED(1026, "Lỗi xảy ra trong quá trình upload ảnh", HttpStatus.BAD_REQUEST),
+    CART_ITEM_NOT_FOUND(1027, "Không tìm thấy sản phẩm cần xóa ttrong giỏ hàng", HttpStatus.NOT_FOUND),
+    PRODUCT_OUT_OF_STOCK(1028, "Sản phẩm đã hết hàng trong kho", HttpStatus.BAD_REQUEST)
 
 
     ;

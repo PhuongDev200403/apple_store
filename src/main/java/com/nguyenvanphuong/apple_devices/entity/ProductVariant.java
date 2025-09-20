@@ -28,15 +28,11 @@ public class ProductVariant {
 
     // SKU duy nhất cho mỗi variant
     @Column(name = "sku", unique = true, nullable = false)
-    //@NotBlank(message = "SKU is required")
     private String sku;
 
     String memory;
 
-    // Sử dụng BigDecimal thay vì float cho độ chính xác
     @Column(name = "price", precision = 10, scale = 2, nullable = false)
-    //@DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than 0")
-    //@NotNull(message = "Price is required")
     private BigDecimal price;
 
     @Column(name = "quantity", nullable = false)
@@ -46,7 +42,6 @@ public class ProductVariant {
 
     // Thuộc tính cơ bản
     @Column(name = "color")
-    //@NotBlank(message = "Color is required")
     private String color;
 
     @Column(name = "image_url")
@@ -59,7 +54,7 @@ public class ProductVariant {
     // Trạng thái variant
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private ProductVariantStatus status = ProductVariantStatus.ACTIVE;
+    private ProductVariantStatus status;
 
     // Slug cho SEO
     @Column(name = "slug")

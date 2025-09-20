@@ -1,5 +1,7 @@
 package com.nguyenvanphuong.apple_devices.service;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.nguyenvanphuong.apple_devices.dtos.request.NewsRequest;
 import com.nguyenvanphuong.apple_devices.dtos.response.NewsResponse;
 import com.nguyenvanphuong.apple_devices.entity.News;
@@ -18,6 +20,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +30,44 @@ public class NewsServiceImpl implements NewsService{
 
     private final NewsMapper newsMapper;
 
-    private static final String UPLOAD_DIR = "uploads/images/";
+    //private static final String UPLOAD_DIR = "uploads/";
+
+    private final Cloudinary cloudinary;
+
+//    @Override
+//    public NewsResponse createNews(NewsRequest request) throws IOException {
+//        // Kiểm tra trùng title
+//        if (newsRepository.existsByTitle(request.getTitle())) {
+//            throw new AppException(ErrorCode.NEWS_EXISTED);
+//        }
+//
+//        News news = newsMapper.toNews(request);
+//        news.setPublishedAt(LocalDateTime.now());
+//
+//        // Xử lý upload ảnh
+//        MultipartFile file = request.getImageUrl();
+//        if (file != null && !file.isEmpty()) {
+//            try {
+//                Files.createDirectories(Paths.get(UPLOAD_DIR));
+//
+//                // Làm sạch tên file
+//                String originalFileName = file.getOriginalFilename().replaceAll("[^a-zA-Z0-9\\.\\-]", "_");
+//                String fileName = System.currentTimeMillis() + "_" + originalFileName;
+//
+//                Path filePath = Paths.get(UPLOAD_DIR, fileName);
+//                Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+//
+//                news.setImageUrl(fileName);
+//
+//            } catch (IOException e) {
+//                throw new AppException(ErrorCode.UPLOAD_FAILED);
+//            }
+//        }
+//
+//        // Lưu tin tức
+//        newsRepository.save(news);
+//        return newsMapper.toNewsResponse(news);
+//    }
 
     @Override
     public NewsResponse createNews(NewsRequest request) throws IOException {
@@ -38,21 +79,16 @@ public class NewsServiceImpl implements NewsService{
         News news = newsMapper.toNews(request);
         news.setPublishedAt(LocalDateTime.now());
 
-        // Xử lý upload ảnh
+        // Xử lý upload ảnh lên Cloudinary
         MultipartFile file = request.getImageUrl();
         if (file != null && !file.isEmpty()) {
             try {
-                Files.createDirectories(Paths.get(UPLOAD_DIR));
-
-                // Làm sạch tên file
-                String originalFileName = file.getOriginalFilename().replaceAll("[^a-zA-Z0-9\\.\\-]", "_");
-                String fileName = System.currentTimeMillis() + "_" + originalFileName;
-
-                Path filePath = Paths.get(UPLOAD_DIR, fileName);
-                Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-                news.setImageUrl(fileName);
-
+                Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
+                        "public_id", UUID.randomUUID().toString(), // Tên file unique
+                        "folder", "apple-devices/news" // Lưu vào folder trên Cloudinary
+                ));
+                String imageUrl = (String) uploadResult.get("secure_url"); // Lấy URL
+                news.setImageUrl(imageUrl); // Lưu URL vào DB
             } catch (IOException e) {
                 throw new AppException(ErrorCode.UPLOAD_FAILED);
             }

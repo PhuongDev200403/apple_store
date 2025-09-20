@@ -1,4 +1,4 @@
-package com.nguyenvanphuong.apple_devices.configurantion;
+package com.nguyenvanphuong.apple_devices.configuration;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

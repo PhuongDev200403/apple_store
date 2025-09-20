@@ -1,6 +1,6 @@
 package com.nguyenvanphuong.apple_devices.controller;
 
-import com.nguyenvanphuong.apple_devices.configurantion.JwtUtil;
+import com.nguyenvanphuong.apple_devices.configuration.JwtUtil;
 import com.nguyenvanphuong.apple_devices.dtos.request.LoginRequest;
 import com.nguyenvanphuong.apple_devices.dtos.request.RegisterRequest;
 import com.nguyenvanphuong.apple_devices.dtos.response.ApiResponse;
@@ -9,7 +9,6 @@ import com.nguyenvanphuong.apple_devices.entity.Role;
 import com.nguyenvanphuong.apple_devices.entity.User;
 import com.nguyenvanphuong.apple_devices.exception.AppException;
 import com.nguyenvanphuong.apple_devices.exception.ErrorCode;
-import com.nguyenvanphuong.apple_devices.mapper.UserMapper;
 import com.nguyenvanphuong.apple_devices.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -35,17 +34,20 @@ public class AuthController {
 
     @PostMapping("/login")
     //Endpoint public
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    public ApiResponse<?> login(@RequestBody LoginRequest request) {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
             );
             UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
             String token = jwtUtil.generateToken(userDetails);
-            return ResponseEntity.ok(new LoginRespone(token));
+            return ApiResponse.builder()
+                    .result(token)
+                    .build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Invalid username or password");
+            return ApiResponse.builder()
+                    .result(ErrorCode.LOGIN_FAILED)
+                    .build();
         }
     }
 

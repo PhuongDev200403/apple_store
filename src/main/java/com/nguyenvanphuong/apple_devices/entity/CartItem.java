@@ -30,25 +30,17 @@ public class CartItem {
     private ProductVariant productVariant;
 
     @Column(name = "quantity", nullable = false)
-    //@Min(value = 1, message = "Quantity must be at least 1")
-    //@Max(value = 999, message = "Quantity cannot exceed 999")
-    //@NotNull(message = "Quantity is required")
     private Integer quantity;
 
-    // Lưu giá tại thời điểm thêm vào giỏ (tránh thay đổi khi ProductVariant cập nhật giá)
-    @Column(name = "unit_price", precision = 10, scale = 2, nullable = false)
-    //@DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than 0")
-    //@NotNull(message = "Unit price is required")
+
+    @Column(name = "unit_price", precision = 20, scale = 2, nullable = false)
     private BigDecimal unitPrice;
 
-    @Column(name = "total_price", precision = 10, scale = 2, nullable = false)
-    //@DecimalMin(value = "0.0", inclusive = false, message = "Total price must be greater than 0")
-    //@NotNull(message = "Total price is required")
+    @Column(name = "total_price", precision = 20, scale = 2, nullable = false)
     private BigDecimal totalPrice;
 
     // Lưu thông tin sản phẩm tại thời điểm thêm vào giỏ
     @Column(name = "product_name", nullable = false)
-    //@NotBlank(message = "Product name is required")
     private String productName;
 
     @Column(name = "product_image")
