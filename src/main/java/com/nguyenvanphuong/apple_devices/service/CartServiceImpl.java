@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -112,6 +113,13 @@ public class CartServiceImpl implements CartService{
     }
 
     @Override
+    public CartResponse deleteCartItem(Long productVariantId) {
+
+
+        return null;
+    }
+
+    @Override
     public CartResponse clearCart(Long targetUserId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -155,6 +163,27 @@ public class CartServiceImpl implements CartService{
 
     @Override
     public CartResponse getMyCart() {
-        return null;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if(authentication == null || !authentication.isAuthenticated()){
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        Cart cart = cartRepository.findByUser(user)
+                .orElseGet(() -> {
+                    Cart newCart = Cart.builder()
+                            .user(user)
+                            .status(CartStatus.ACTIVE)
+                            .items(new ArrayList<>())
+                            .build();
+                    return cartRepository.save(newCart);
+                });
+
+        return cartMapper.toResponse(cart);
     }
 }
