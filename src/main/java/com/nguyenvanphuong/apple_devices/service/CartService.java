@@ -1,7 +1,10 @@
 package com.nguyenvanphuong.apple_devices.service;
 
 import com.nguyenvanphuong.apple_devices.dtos.request.AddToCartRequest;
+import com.nguyenvanphuong.apple_devices.dtos.request.UpdateQuantityRequest;
 import com.nguyenvanphuong.apple_devices.dtos.response.CartResponse;
+
+import java.util.List;
 
 public interface CartService {
 
@@ -15,4 +18,8 @@ public interface CartService {
     CartResponse clearCart(Long targetUserId);
     //Phương thức lấy cart của bản thân
     CartResponse getMyCart();
+    //Phương thức lấy tất cả giỏ hàng ra
+    List<CartResponse> getAllCart();
+    //Phương thức cập nhật só lượng sản pham trong gio
+    CartResponse UpdateQuantity(Long productVariantId, UpdateQuantityRequest request);
 }
