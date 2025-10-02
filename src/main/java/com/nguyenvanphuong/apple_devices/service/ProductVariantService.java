@@ -3,6 +3,7 @@ package com.nguyenvanphuong.apple_devices.service;
 import com.nguyenvanphuong.apple_devices.dtos.request.ProductVariantRequest;
 import com.nguyenvanphuong.apple_devices.dtos.response.ProductVariantResponse;
 import com.nguyenvanphuong.apple_devices.entity.ProductVariant;
+import org.springframework.data.domain.Page;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,5 +25,5 @@ public interface ProductVariantService {
     ProductVariantResponse getVariantByProductAndColor(Long productId, String color, String memory);
 
     //Lấy tất cả sản phẩm ra
-    List<ProductVariantResponse> getAll();
+    Page<ProductVariantResponse> getAll(int page, int size);
 }

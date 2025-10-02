@@ -11,7 +11,11 @@ import com.nguyenvanphuong.apple_devices.mapper.ProductVariantMapper;
 import com.nguyenvanphuong.apple_devices.repository.ProductRepository;
 import com.nguyenvanphuong.apple_devices.repository.ProductVariantRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,6 +27,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProductVariantServiceImpl implements ProductVariantService{
@@ -82,7 +87,7 @@ public class ProductVariantServiceImpl implements ProductVariantService{
 
     @Override
     public List<ProductVariantResponse> getVariantsByProductId(Long productId) {
-        System.out.println("Phương thức lấy danh sách biến thể của sản phẩm theo sản phầm");
+        log.info("Phương thức lấy danh sách biến thể của sản phẩm theo sản phầm");
         return productVariantRepository.findByProductId(productId)
                 .stream().map(productVariantMapper::toResponse)
                 .toList();
@@ -91,7 +96,7 @@ public class ProductVariantServiceImpl implements ProductVariantService{
     @Override
     public ProductVariantResponse getVariantByProductAndColor(Long productId, String color, String memory) {
 
-        System.out.println("Phương thức lấy biến thể sản phẩm theo ");
+        log.info("Phương thức lấy biến thể sản phẩm theo màu :" + color);
         ProductVariant variant = productVariantRepository.findByProductIdAndColorAndMemory(productId, color, memory)
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
 
@@ -99,8 +104,10 @@ public class ProductVariantServiceImpl implements ProductVariantService{
     }
 
     @Override
-    public List<ProductVariantResponse> getAll() {
-        return productVariantRepository.findAll().stream().map(productVariantMapper::toResponse).toList();
+    public Page<ProductVariantResponse> getAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return productVariantRepository.findAll(pageable)
+                .map(productVariantMapper::toResponse);
     }
 
 }

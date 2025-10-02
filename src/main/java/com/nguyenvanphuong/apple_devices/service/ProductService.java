@@ -23,8 +23,6 @@ public interface ProductService {
     //Phương thức xóa sản phẩm theo id
     void deleteProduct(Long id);
 
-    //Phương thức lấy danh sách sản phẩm theo danh mục
-
     //Phương thức tìm kiếm sản phẩm theo tên
     List<ProductResponse> searcByName(String keyword);
 }

@@ -5,6 +5,7 @@ import com.nguyenvanphuong.apple_devices.dtos.response.ApiResponse;
 import com.nguyenvanphuong.apple_devices.dtos.response.ProductVariantResponse;
 import com.nguyenvanphuong.apple_devices.service.ProductVariantService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -48,9 +49,13 @@ public class ProductVariantController {
     }
 
     @GetMapping()
-    public ApiResponse<List<ProductVariantResponse>> getAll(){
-        return ApiResponse.<List<ProductVariantResponse>>builder()
-                .result(productVariantService.getAll())
+    //Endpoint public
+    public ApiResponse<Page<ProductVariantResponse>> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ){
+        return ApiResponse.<Page<ProductVariantResponse>>builder()
+                .result(productVariantService.getAll(page, size))
                 .build();
     }
 

@@ -1,14 +1,13 @@
 package com.nguyenvanphuong.apple_devices.service;
 
 import com.nguyenvanphuong.apple_devices.dtos.request.AddToCartRequest;
-import com.nguyenvanphuong.apple_devices.dtos.response.CartItemResponse;
+import com.nguyenvanphuong.apple_devices.dtos.request.UpdateQuantityRequest;
 import com.nguyenvanphuong.apple_devices.dtos.response.CartResponse;
-import com.nguyenvanphuong.apple_devices.dtos.response.UserResponse;
 import com.nguyenvanphuong.apple_devices.entity.*;
 import com.nguyenvanphuong.apple_devices.exception.AppException;
 import com.nguyenvanphuong.apple_devices.exception.ErrorCode;
+import com.nguyenvanphuong.apple_devices.mapper.CartItemMapper;
 import com.nguyenvanphuong.apple_devices.mapper.CartMapper;
-import com.nguyenvanphuong.apple_devices.mapper.UserMapper;
 import com.nguyenvanphuong.apple_devices.repository.CartItemRepository;
 import com.nguyenvanphuong.apple_devices.repository.CartRepository;
 import com.nguyenvanphuong.apple_devices.repository.ProductVariantRepository;
@@ -17,14 +16,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +30,7 @@ public class CartServiceImpl implements CartService{
     private final ProductVariantRepository productVariantRepository;
     private final UserRepository userRepository;
     private final CartMapper cartMapper;
+    //private final CartItemMapper cartItemMapper;
 
     @Override
     public CartResponse addToCart(AddToCartRequest request) {
@@ -62,6 +59,10 @@ public class CartServiceImpl implements CartService{
 
         if(variant.getQuantity() <= 0 || variant.getStatus() == ProductVariantStatus.OUT_OF_STOCK){
             throw new AppException(ErrorCode.FAILED_TO_ADD_TO_CART);
+        }
+
+        if(variant.getStatus() == ProductVariantStatus.INACTIVE){
+            throw new AppException(ErrorCode.FAILED_TO_BUY);
         }
 
         CartItem cartItem = cart.getItems().stream()
@@ -114,9 +115,33 @@ public class CartServiceImpl implements CartService{
 
     @Override
     public CartResponse deleteCartItem(Long productVariantId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
 
-        return null;
+        // Lấy email (sub) từ token
+        String email = authentication.getName();
+
+        User currentUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        // lấy cart theo người dùng
+        Cart cart = cartRepository.findByUser(currentUser)
+                .orElseThrow(() -> new AppException(ErrorCode.CART_NOT_FOUND));
+
+        ProductVariant variant = productVariantRepository.findById(productVariantId)
+                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_VARIANT_NOT_FOUND));
+
+        CartItem cartItem = cartItemRepository.findByCartAndProductVariant(cart, variant)
+                .orElseThrow(() -> new AppException(ErrorCode.ITEM_NOT_FOUND));
+
+        cart.getItems().remove(cartItem);
+
+        cartRepository.save(cart);
+
+        return cartMapper.toResponse(cart);
     }
 
     @Override
@@ -186,4 +211,47 @@ public class CartServiceImpl implements CartService{
 
         return cartMapper.toResponse(cart);
     }
+
+    @Override
+    public List<CartResponse> getAllCart() {
+        return cartRepository.findAll().stream()
+                .map(cartMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    public CartResponse UpdateQuantity(Long productVariantId, UpdateQuantityRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+
+        String email = authentication.getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        Cart cart = cartRepository.findByUser(user)
+                .orElseThrow(() -> new AppException(ErrorCode.CART_NOT_FOUND));
+
+        ProductVariant variant = productVariantRepository.findById(productVariantId)
+                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_VARIANT_NOT_FOUND));
+
+        CartItem cartItem = cartItemRepository.findByCartAndProductVariant(cart, variant)
+                .orElseThrow(() -> new AppException(ErrorCode.ITEM_NOT_FOUND));
+
+        if (request.getQuantity() <= 0) {
+            // Nếu số lượng <= 0 thì xóa luôn item
+            cart.getItems().remove(cartItem);
+            cartItemRepository.delete(cartItem);
+        } else {
+            // Cập nhật số lượng
+            cartItem.setQuantity(request.getQuantity());
+        }
+
+        cartRepository.save(cart);
+
+        return cartMapper.toResponse(cart);
+    }
+
 }
