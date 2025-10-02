@@ -65,7 +65,32 @@ public class NewsServiceImpl implements NewsService{
 
     @Override
     public NewsResponse updateNews(NewsRequest request, Long id) {
-        return null;
+        //Tìm kiếm xem tin tức có tồn tại hay không
+        News news = newsRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.NEWS_NOT_FOUND));
+
+        news.setTitle(request.getTitle());
+        news.setContent(request.getContent());
+        news.setIsFeatured(request.getIsFeatured());
+        MultipartFile file = request.getImageUrl();
+        if(file != null && !file.isEmpty()){
+            try {
+                Files.createDirectories(Paths.get(UPLOAD_DIR));
+
+                // Làm sạch tên file
+                String originalFileName = file.getOriginalFilename().replaceAll("[^a-zA-Z0-9\\.\\-]", "_");
+                String fileName = System.currentTimeMillis() + "_" + originalFileName;
+
+                Path filePath = Paths.get(UPLOAD_DIR, fileName);
+                Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+                news.setImageUrl(fileName);
+
+            } catch (IOException e) {
+                throw new AppException(ErrorCode.UPLOAD_FAILED);
+            }
+        }
+        return newsMapper.toNewsResponse(newsRepository.save(news));
     }
 
 

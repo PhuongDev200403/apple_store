@@ -74,4 +74,13 @@ public class NewsController {
                 .result(newsService.getNewsByIsActiveTrue())
                 .build();
     }
+
+    //Phương thức cập nhật tin tức
+    @PatchMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ApiResponse<NewsResponse> updateNews(@ModelAttribute NewsRequest request, @PathVariable Long id ){
+        return ApiResponse.<NewsResponse>builder()
+                .result(newsService.updateNews(request, id))
+                .build();
+    }
 }

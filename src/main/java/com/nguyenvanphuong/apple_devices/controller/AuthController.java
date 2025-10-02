@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final AuthServiceImpl authService;
 
-
     @PostMapping("/login")
     //Endpoint public
     public ApiResponse<String> login(@RequestBody LoginRequest request) {
