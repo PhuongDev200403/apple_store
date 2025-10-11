@@ -69,7 +69,7 @@ public class AuthController {
         newUser.setCreateAt(LocalDateTime.now());
         newUser.setUpdateAt(LocalDateTime.now());
         newUser.setPhone(request.getPhone());
-        //chỉ cho phép taọ user không cho phép tạo tk admin
+
         newUser.setRole(Role.USER);
         newUser.setPassword(passwordEncoder.encode(request.getPassword()));
 
