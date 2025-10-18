@@ -20,8 +20,17 @@ Dự án giúp em củng cố kiến thức về **Spring Boot, RESTful API, JPA
   + Thêm sản phẩm vào giỏ hàng, xóa sản phẩm khỏi giỏ hàng, clear giỏ hàng, mua tất cả sản phẩm trong giỏ hàng
   + Thêm sản phẩm vào danh sách yêu thích, xóa sản phẩm khỏi danh sách yêu thích
   + Tìm kiếm sản phẩm, mua hàng
-  + Đổi mật khẩu +Cập nhật thông tin cá nhân
+  + Đổi mật khẩu
+  + Cập nhật thông tin cá nhân
 ---
+
+## Biểu đồ Use case tổng quát với Draw.io
+<img width="878" height="508" alt="image" src="https://github.com/user-attachments/assets/018d57f5-51fe-4bda-bfe6-492985ae7ccd" />
+
+
+## ER Diagram
+<img width="1156" height="1066" alt="image" src="https://github.com/user-attachments/assets/463244f0-8329-49ff-a099-8b515d2dbe61" />
+
 ## Kiến thức và công nghệ sử dụng 
 | Công nghệ | Mô tả | 
 |------------|-------| 
@@ -33,13 +42,13 @@ Dự án giúp em củng cố kiến thức về **Spring Boot, RESTful API, JPA
 | **Docker** | Đóng gói và triển khai ứng dụng | 
 | **Postman** | Kiểm thử API | 
 
-## ER Diagram
-<img width="1156" height="1066" alt="image" src="https://github.com/user-attachments/assets/463244f0-8329-49ff-a099-8b515d2dbe61" />
 
 ## Ví dụ API 
 **Endpoint** 
-#### Đăng nhập 
-POST /api/auth/login 
+#### Đăng nhập
+```http
+   POST /api/auth/login
+```
 **Request body:**
 ```json
 {
@@ -48,12 +57,19 @@ POST /api/auth/login
 }
 ```
 **Response**
+```json
 {
     "code": 0,
     "result": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJST0xFX1VTRVIiXSwidXNlcm5hbWUiOiJ2dGxvQGdtYWlsLmNvbSIsInN1YiI6InZ0bG9AZ21haWwuY29tIiwiaWF0IjoxNzYwMzUzNjMwLCJleHAiOjE3NjAzNTcyMzB9.pW0AwEGW2kpZRedYgXcFF9Me392Sn81jH9iU1248a-Y"
 }
+```
+
 #### Lấy tất cả biến thể sản phẩm
-GET /api/variants
+
+```http
+   GET /api/variants
+```
+
 ```json
 {
     "code": 0,
