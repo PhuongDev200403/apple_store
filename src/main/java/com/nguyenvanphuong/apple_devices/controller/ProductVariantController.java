@@ -59,6 +59,7 @@ public class ProductVariantController {
 
     @GetMapping()
     public ApiResponse<List<ProductVariantResponse>> getAll(){
+        log.info("Bên controller");
         return ApiResponse.<List<ProductVariantResponse>>builder()
                 .result(productVariantService.getAll())
                 .build();

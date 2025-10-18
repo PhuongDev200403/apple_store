@@ -107,13 +107,10 @@ public class ProductVariantServiceImpl implements ProductVariantService{
     // bao gồm cả các variants
     @Override
     public List<ProductVariantResponse> getAll() {
+
         return productVariantRepository.findAll()
                 .stream().map(productVariantMapper::toResponse)
                 .toList();
     }
-
-
-
-
 
 }
