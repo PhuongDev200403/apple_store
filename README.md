@@ -169,7 +169,7 @@ Dự án giúp em củng cố kiến thức về **Spring Boot, RESTful API, JPA
 ```
 
 ## Video test Api
-https://youtu.be/MVMSWIjZhEc?si=UAHN8duYz5Ph_UPO
+[https://youtu.be/MVMSWIjZhEc?si=UAHN8duYz5Ph_UPO](https://youtu.be/x4H3RDVRv9g?si=HLx3oLklc0mxMRaZ)
 
 ## Build and Deployment
 
