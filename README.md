@@ -1,11 +1,11 @@
-# Apple Devices 
+# API cho Apple Devices 
 
 ##  Author
 **Nguyễn Văn Phương**  
  phuongnguyen20403@gmail.com  
 
 ## Giới thiệu 
-**Apple Devices** là một dự án cá nhân được phát triển bằng **Spring Boot** nhằm mô phỏng hệ thống bán thiết bị điện tử Apple. 
+**Apple Devices** là một dự án cá nhân được phát triển bằng **Spring Boot** nhằm cung cấp API hệ thống bán thiết bị điện tử Apple. 
 Dự án giúp em củng cố kiến thức về **Spring Boot, RESTful API, JPA, MySQL, JWT Authentication và Docker**, sử dụng **Cloudinary** để lưu trữ ảnh sản phẩm. 
 --- 
 ## Tính năng chính 
@@ -49,7 +49,7 @@ Dự án giúp em củng cố kiến thức về **Spring Boot, RESTful API, JPA
 ```http
    POST /api/auth/login
 ```
-**Request body:**
+**Request body**
 ```json
 {
     "email":"vtlo@gmail.com",
@@ -147,21 +147,6 @@ Dự án giúp em củng cố kiến thức về **Spring Boot, RESTful API, JPA
             "slug": "iphone-15-pro-max-pink-256gb",
             "createdAt": "2025-10-17T11:36:54.48433",
             "updatedAt": "2025-10-17T11:36:54.48433",
-            "productId": 1
-        },
-        {
-            "id": 6,
-            "price": 30000000.00,
-            "status": "ACTIVE",
-            "imageUrl": "https://res.cloudinary.com/dcv3lxcux/image/upload/v1760690952/apple-devices/be7c7878-f9c7-4b0c-a9ad-80dcd8ee4bc7.webp",
-            "quantity": 20,
-            "memory": "256",
-            "sku": "IP15-YELOW-256",
-            "color": "yellow",
-            "specifications": "{\n  \"ram\": \"8GB\",\n  \"storage\": \"256GB\",\n  \"chip\": \"A17 Pro\",\n  \"screen_size\": \"6.7 inch\",\n  \"battery\": \"4422 mAh\",\n  \"camera\": \"48MP + 12MP + 12MP\",\n  \"os\": \"iOS 17\",\n  \"weight\": \"221g\"\n}",
-            "slug": "iphone-15-pro-max-yellow-256gb",
-            "createdAt": "2025-10-17T15:49:12.095761",
-            "updatedAt": "2025-10-17T15:49:12.096076",
             "productId": 1
         }
     ]
