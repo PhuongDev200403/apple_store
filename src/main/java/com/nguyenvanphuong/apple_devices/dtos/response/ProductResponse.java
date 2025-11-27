@@ -18,6 +18,6 @@ public class ProductResponse {
     String name;
     ProductStatus status;
     Long categoryChildId;
-    //List<ProductVariantResponse> productVariants = new ArrayList<>();
+    List<ProductVariantResponse> productVariants = new ArrayList<>();
 }
 

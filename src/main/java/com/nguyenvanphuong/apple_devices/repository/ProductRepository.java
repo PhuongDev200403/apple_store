@@ -15,8 +15,15 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     List<Product> findByStatusTrue();
 
+    @Query("SELECT DISTINCT p FROM Product p " +
+            "LEFT JOIN FETCH p.productVariants pv " +
+            "WHERE p.status = 'ACTIVE'")
+    List<Product> findAllActiveWithVariants();
+
     //tìm kiếm theo tên
     @Query(value = "SELECT * FROM products WHERE name LIKE %:keyword%", nativeQuery = true)
     List<Product> searchByNameNative(@Param("keyword") String keyword);
+
+    List<Product> findByCategoryChildId(Long id);
 
 }

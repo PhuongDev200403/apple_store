@@ -39,6 +39,14 @@ public class ProductController {
                 .build();
     }
 
+    //get san pham by seriesID
+    @GetMapping("/series/{id}")
+    public ApiResponse<List<ProductResponse>> getProductBySeriesId(@PathVariable Long id){
+        return ApiResponse.<List<ProductResponse>>builder()
+                .result(productService.getBySeriesId(id))
+                .build();
+    }
+
     @GetMapping()
     //Endpoint public
     public ApiResponse<List<ProductResponse>> getAll(){

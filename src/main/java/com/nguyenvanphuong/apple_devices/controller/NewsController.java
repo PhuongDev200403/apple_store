@@ -58,7 +58,7 @@ public class NewsController {
     }
 
     //Phướng thức lấy danh sách tin tức nổi bật của admin tức lấy cả danh đã xóa nữa
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    //@PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/is_featured")
     public ApiResponse<List<NewsResponse>> getNewsByIsFeatured(){
         return ApiResponse.<List<NewsResponse>>builder()

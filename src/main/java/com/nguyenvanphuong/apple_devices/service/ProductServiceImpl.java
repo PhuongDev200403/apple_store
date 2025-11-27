@@ -52,8 +52,9 @@ public class ProductServiceImpl implements ProductService{
     //chỉ lấy danh sách sản phẩm mà có status là true
     @Override
     public List<ProductResponse> getAll() {
-        return productRepository.findByStatusTrue()
-                .stream().map(productMapper::toResponse)
+        return productRepository.findAllActiveWithVariants()
+                .stream()
+                .map(productMapper::toResponse)
                 .toList();
     }
 
@@ -84,6 +85,13 @@ public class ProductServiceImpl implements ProductService{
         product.setStatus(ProductStatus.INACTIVE);
 
         productRepository.save(product);
+    }
+
+    @Override
+    public List<ProductResponse> getBySeriesId(Long seriesId) {
+        return productRepository.findByCategoryChildId(seriesId)
+                .stream().map(productMapper::toResponse)
+                .toList();
     }
 
     @Override

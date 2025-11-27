@@ -5,7 +5,7 @@ import com.nguyenvanphuong.apple_devices.dtos.response.ProductResponse;
 import com.nguyenvanphuong.apple_devices.entity.Product;
 import org.mapstruct.*;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {ProductVariantMapper.class})
 public interface ProductMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createAt", expression = "java(java.time.LocalDateTime.now())")
