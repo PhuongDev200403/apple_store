@@ -23,4 +23,6 @@ public interface ProductVariantService {
     //Lấy tất cả sản phẩm ra
     List<ProductVariantResponse> getAll();
 
+    //Lấy danh sách sản phẩm theo danh mục
+    List<ProductVariantResponse> getVariantByCategoryId(Long categoryId);
 }

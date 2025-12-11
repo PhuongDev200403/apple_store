@@ -113,4 +113,11 @@ public class ProductVariantServiceImpl implements ProductVariantService{
                 .toList();
     }
 
+    @Override
+    public List<ProductVariantResponse> getVariantByCategoryId(Long categoryId) {
+        return productVariantRepository.findActiveByCategoryId(categoryId)
+                .stream().map(productVariantMapper::toResponse)
+                .toList();
+    }
+
 }

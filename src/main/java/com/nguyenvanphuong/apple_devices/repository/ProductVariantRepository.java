@@ -19,4 +19,12 @@ public interface ProductVariantRepository extends JpaRepository<ProductVariant, 
     @Query("SELECT pv FROM ProductVariant pv JOIN FETCH pv.product WHERE pv.id = :id")
     Optional<ProductVariant> findByIdWithProduct(@Param("id") Long id);
 
+    @Query("SELECT pv FROM ProductVariant pv " +
+            "JOIN pv.product p " +
+            "JOIN p.categoryChild cc " +
+            "JOIN cc.category c " +
+            "WHERE c.id = :categoryId " +
+            "AND pv.status = 'ACTIVE' " +
+            "ORDER BY pv.createdAt DESC")
+    List<ProductVariant> findActiveByCategoryId(@Param("categoryId") Long categoryId);
 }

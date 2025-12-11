@@ -36,7 +36,7 @@ public class UserController {
 
     //Phương thức cập nhật tài khoản
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or #id == principal.username")
+    //@PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     public ApiResponse<UserResponse> updateUser(@PathVariable Long id, @RequestBody UserRequest request){
         return ApiResponse.<UserResponse>builder()
                 .result(userDetailsService.updateUser(id, request))
